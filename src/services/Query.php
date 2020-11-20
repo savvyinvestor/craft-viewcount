@@ -22,12 +22,25 @@ use doublesecretagency\viewcount\ViewCount;
 use doublesecretagency\viewcount\records\ElementTotal;
 use doublesecretagency\viewcount\records\UserHistory;
 
+
 /**
  * Class Query
  * @since 1.0.0
  */
 class Query extends Component
 {
+
+    public function filterByMemberName(string $filter)
+    {
+
+        $rows = (new craft\db\Query())
+                ->select(['id'])
+                ->from('viewcount_userhistories')
+                ->limit(10)
+                ->all();
+
+        return $rows;
+    }
 
     //
     public function total($elementId, $key = null): int

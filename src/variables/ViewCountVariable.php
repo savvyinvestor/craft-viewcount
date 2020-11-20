@@ -14,12 +14,23 @@ namespace doublesecretagency\viewcount\variables;
 use craft\elements\db\ElementQuery;
 use doublesecretagency\viewcount\ViewCount;
 
+
 /**
  * Class ViewCountVariable
  * @since 1.0.0
  */
 class ViewCountVariable
 {
+
+    public function filterByMemberName(string $filter)
+    {
+        return ViewCount::$plugin->query->filterByMemberName($filter);
+    }
+
+    public function userHistory(int $userId)
+    {
+        return ViewCount::$plugin->query->userHistory($userId);
+    }
 
     // Output total views of element
     public function total($elementId, $key = null)
