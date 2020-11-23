@@ -34,11 +34,15 @@ class Query extends Component
     {
 
         $rows = (new craft\db\Query())
-                ->select(['id'])
-                ->from('viewcount_userhistories')
-                ->limit(10)
+                ->select(['content.title', 'users.firstName', 
+                'users.lastName', 'content.field_jobTitle',
+                'content.field_userCompanyName'])
+                ->from('content')
+                ->innerJoin('{{%viewcount_viewlog}}', '[[viewcount_viewlog.elementId]] = [[content.elementId]]')
+                ->innerJoin('users', '[[viewcount_viewlog.userId]] = [[users.id]]')
+                ->where(['users.firstName' => 'Savvy', 'users.lastName' => 'Investor'])
                 ->all();
-
+//var_dump($rows); die();
         return $rows;
     }
 
