@@ -10,7 +10,7 @@ use doublesecretagency\viewcount\ViewCount;
 class AnalyticsController extends Controller
 {
 
-    public function actionIndex()
+    public function actionBuildNodeAnalyticsTable()
     {
 
         echo ViewCount::$plugin->analytics->buildNodeAnalyticsTable();
