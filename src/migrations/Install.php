@@ -35,6 +35,7 @@ class Install extends Migration
      */
     public function safeDown()
     {
+        $this->dropTableIfExists('{{%viewcount_s2nodeanalytics}}');
         $this->dropTableIfExists('{{%viewcount_elementtotals}}');
         $this->dropTableIfExists('{{%viewcount_viewlog}}');
         $this->dropTableIfExists('{{%viewcount_userhistories}}');
@@ -45,34 +46,66 @@ class Install extends Migration
      */
     protected function createTables()
     {
-        $this->createTable('{{%viewcount_elementtotals}}', [
-            'id'          => $this->primaryKey(),
-            'elementId'   => $this->integer()->notNull(),
-            'viewKey'     => $this->string(),
-            'viewTotal'   => $this->integer()->defaultValue(0),
-            'dateCreated' => $this->dateTime()->notNull(),
-            'dateUpdated' => $this->dateTime()->notNull(),
-            'uid'         => $this->uid(),
-        ]);
-        $this->createTable('{{%viewcount_viewlog}}', [
-            'id'          => $this->primaryKey(),
-            'elementId'   => $this->integer()->notNull(),
-            'viewKey'     => $this->string(),
-            'userId'      => $this->integer(),
-            'ipAddress'   => $this->string(),
-            'userAgent'   => $this->text(),
-            'dateCreated' => $this->dateTime()->notNull(),
-            'dateUpdated' => $this->dateTime()->notNull(),
-            'uid'         => $this->uid(),
-        ]);
-        $this->createTable('{{%viewcount_userhistories}}', [
-            'id'          => $this->integer()->notNull(),
-            'history'     => $this->text(),
-            'dateCreated' => $this->dateTime()->notNull(),
-            'dateUpdated' => $this->dateTime()->notNull(),
-            'uid'         => $this->uid(),
-            'PRIMARY KEY([[id]])',
-        ]);
+        // $this->createTable('{{%viewcount_s2nodeanalytics}}', [
+        //     'id'          => $this->primaryKey(),
+        //     'nid'   => $this->integer()->notNull(),
+        //     'title'     => $this->string()->notNull(),
+        //     'type'     => $this->string(),
+        //     'uid'   => $this->integer()->notNull(),
+        //     'first_name'     => $this->string(),
+        //     'last_name'     => $this->string(),
+        //     'job_title'     => $this->string(),
+        //     'company_name'     => $this->string(),
+        //     'email'     => $this->string(),
+        //     'phone'     => $this->string(),
+        //     'user_city'     => $this->string(),
+        //     'user_country_id'   => $this->integer(),
+        //     'click' => $this->boolean()->notNull(),
+        //     'dateCreated' => $this->dateTime()->notNull(),
+        //     'dateUpdated' => $this->dateTime()->notNull(),
+        //     'author_company_id'   => $this->integer(),
+        //     'author_company_title' => $this->string(),
+        //     'companys_author_uid'   => $this->integer(),
+        //     'companys_author_name' => $this->string(),
+        //     'node_companys_nid'   => $this->integer(),
+        //     'node_companys_title' => $this->string(),
+        //     'author_first_name' => $this->string(),
+        //     'author_last_name' => $this->string(),
+        // ]);
+
+        // // $this->createTable('{{viewcount_s2confanalytics}}', [
+
+        
+        // // ]);
+
+        // $this->createTable('{{%viewcount_elementtotals}}', [
+        //     'id'          => $this->primaryKey(),
+        //     'elementId'   => $this->integer()->notNull(),
+        //     'viewKey'     => $this->string(),
+        //     'viewTotal'   => $this->integer()->defaultValue(0),
+        //     'dateCreated' => $this->dateTime()->notNull(),
+        //     'dateUpdated' => $this->dateTime()->notNull(),
+        //     'uid'         => $this->uid(),
+        // ]);
+        // $this->createTable('{{%viewcount_viewlog}}', [
+        //     'id'          => $this->primaryKey(),
+        //     'elementId'   => $this->integer()->notNull(),
+        //     'viewKey'     => $this->string(),
+        //     'userId'      => $this->integer(),
+        //     'ipAddress'   => $this->string(),
+        //     'userAgent'   => $this->text(),
+        //     'dateCreated' => $this->dateTime()->notNull(),
+        //     'dateUpdated' => $this->dateTime()->notNull(),
+        //     'uid'         => $this->uid(),
+        // ]);
+        // $this->createTable('{{%viewcount_userhistories}}', [
+        //     'id'          => $this->integer()->notNull(),
+        //     'history'     => $this->text(),
+        //     'dateCreated' => $this->dateTime()->notNull(),
+        //     'dateUpdated' => $this->dateTime()->notNull(),
+        //     'uid'         => $this->uid(),
+        //     'PRIMARY KEY([[id]])',
+        // ]);
     }
 
     /**
@@ -80,6 +113,7 @@ class Install extends Migration
      */
     protected function createIndexes()
     {
+        $this->createIndex(null, '{{%viewcount_s2nodeanalytics}}', ['nid']);
         $this->createIndex(null, '{{%viewcount_elementtotals}}', ['elementId']);
         $this->createIndex(null, '{{%viewcount_viewlog}}',       ['elementId']);
     }

@@ -21,6 +21,7 @@ use craft\web\twig\variables\CraftVariable;
 
 use doublesecretagency\viewcount\fields\TotalViews;
 use doublesecretagency\viewcount\models\Settings;
+use doublesecretagency\viewcount\services\AnalyticsService;
 use doublesecretagency\viewcount\services\ViewCountService;
 use doublesecretagency\viewcount\services\Query;
 use doublesecretagency\viewcount\services\View;
@@ -45,7 +46,16 @@ class ViewCount extends Plugin
     /** @inheritDoc */
     public function init()
     {
+
+        // Set the controllerNamespace based on whether this is a console or web request
+        if (Craft::$app->getRequest()->getIsConsoleRequest()) {
+            $this->controllerNamespace = 'doublesecretagency\\viewcount\\console\\controllers';
+        } else {
+            $this->controllerNamespace = 'doublesecretagency\\viewcount\\controllers';
+        }
+
         parent::init();
+
         self::$plugin = $this;
 
         // Load plugin components
@@ -53,6 +63,7 @@ class ViewCount extends Plugin
             'viewCount' => ViewCountService::class,
             'query' => Query::class,
             'view' => View::class,
+            'analytics' => AnalyticsService::class,
         ]);
 
         // Load anonymous history

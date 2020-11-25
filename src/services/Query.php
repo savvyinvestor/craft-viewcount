@@ -34,12 +34,16 @@ class Query extends Component
     {
 
         $rows = (new craft\db\Query())
-                ->select(['content.title', 'users.firstName', 
+                ->select(['users.firstName', 
                 'users.lastName', 'content.field_jobTitle',
-                'content.field_userCompanyName'])
+                'content.field_userCompanyName', 'users.email', 'content.field_city',
+                'content.field_country', 'content.title', 'entrytypes.name', 'authors.firstName'])
                 ->from('content')
                 ->innerJoin('{{%viewcount_viewlog}}', '[[viewcount_viewlog.elementId]] = [[content.elementId]]')
-                ->innerJoin('users', '[[viewcount_viewlog.userId]] = [[users.id]]')
+                ->innerJoin('elements', '[[content.elementId]] = [[elements.id]]')
+                ->innerJoin('entrytypes', '[[elements.fieldLayoutId]] = [[entrytypes.fieldLayoutId]]')
+                ->innerJoin('entries', '[[elements.id]] = [[entries.id]]')
+                ->innerJoin('users', '[[viewcount_viewlog.userId]] = [[users.id]]')->andWhere('[[entries.authorId]] = [[users.id]]')
                 ->where(['users.firstName' => 'Savvy', 'users.lastName' => 'Investor'])
                 ->all();
 //var_dump($rows); die();
