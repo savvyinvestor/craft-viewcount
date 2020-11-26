@@ -9,6 +9,7 @@ use craft\elements\db\ElementQuery;
 class AnalyticsService extends Component
 {
 
+    // RENAME and use this update the viewcount_s2nodeanalytics when in production.
     public function buildNodeAnalyticsTable()
     {
         // $rows = (new craft\db\Query())

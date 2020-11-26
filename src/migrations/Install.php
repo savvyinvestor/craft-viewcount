@@ -49,9 +49,11 @@ class Install extends Migration
         // $this->createTable('{{%viewcount_s2nodeanalytics}}', [
         //     'id'          => $this->primaryKey(),
         //     'nid'   => $this->integer()->notNull(),
+        //      'nid_version' => $this->string(),
         //     'title'     => $this->string()->notNull(),
         //     'type'     => $this->string(),
         //     'uid'   => $this->integer()->notNull(),
+        //     'uid_version' => $this->string(),
         //     'first_name'     => $this->string(),
         //     'last_name'     => $this->string(),
         //     'job_title'     => $this->string(),
@@ -61,9 +63,9 @@ class Install extends Migration
         //     'user_city'     => $this->string(),
         //     'user_country_id'   => $this->integer(),
         //     'click' => $this->boolean()->notNull(),
-        //     'dateCreated' => $this->dateTime()->notNull(),
-        //     'dateUpdated' => $this->dateTime()->notNull(),
-        //     'author_company_id'   => $this->integer(),
+        //     'dateCreated' => $this->dateTime()->defaultValue(NOW())->notNull(),
+        //     'dateUpdated' => $this->dateTime()->defaultValue(NOW())->notNull(),
+        //     'author_company_nid'   => $this->integer(),
         //     'author_company_title' => $this->string(),
         //     'companys_author_uid'   => $this->integer(),
         //     'companys_author_name' => $this->string(),
@@ -71,6 +73,7 @@ class Install extends Migration
         //     'node_companys_title' => $this->string(),
         //     'author_first_name' => $this->string(),
         //     'author_last_name' => $this->string(),
+        //     'created' => $this->integer()->notNull(),
         // ]);
 
         // // $this->createTable('{{viewcount_s2confanalytics}}', [

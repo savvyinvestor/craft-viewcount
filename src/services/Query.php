@@ -33,20 +33,21 @@ class Query extends Component
     public function filterByMemberName(string $filter)
     {
 
+        $member = explode(' ', $filter);
+
+        $firstName = $member[0];
+        $lastName = $member[1];
+
         $rows = (new craft\db\Query())
-                ->select(['users.firstName', 
-                'users.lastName', 'content.field_jobTitle',
-                'content.field_userCompanyName', 'users.email', 'content.field_city',
-                'content.field_country', 'content.title', 'entrytypes.name', 'authors.firstName'])
-                ->from('content')
-                ->innerJoin('{{%viewcount_viewlog}}', '[[viewcount_viewlog.elementId]] = [[content.elementId]]')
-                ->innerJoin('elements', '[[content.elementId]] = [[elements.id]]')
-                ->innerJoin('entrytypes', '[[elements.fieldLayoutId]] = [[entrytypes.fieldLayoutId]]')
-                ->innerJoin('entries', '[[elements.id]] = [[entries.id]]')
-                ->innerJoin('users', '[[viewcount_viewlog.userId]] = [[users.id]]')->andWhere('[[entries.authorId]] = [[users.id]]')
-                ->where(['users.firstName' => 'Savvy', 'users.lastName' => 'Investor'])
+                ->select(['first_name', 
+                'last_name', 'job_title',
+                'company_name', 'email', 'phone','user_city',
+                'user_country_id', 'title', 'type', 'author_first_name', 'author_last_name', 'companys_author_name',
+                'click', 'created'])
+                ->from('viewcount_s2nodeanalytics')
+                ->where(['first_name' => $firstName, 'last_name' => $lastName])
                 ->all();
-//var_dump($rows); die();
+
         return $rows;
     }
 
