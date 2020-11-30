@@ -30,10 +30,10 @@ use doublesecretagency\viewcount\records\UserHistory;
 class Query extends Component
 {
 
-    public function filterByMemberName(string $filter)
+    public function filterByMemberName(array $filters)
     {
 
-        $member = explode(' ', $filter);
+        $member = explode(' ', $filters['member_name']);
 
         $firstName = $member[0];
         $lastName = $member[1];

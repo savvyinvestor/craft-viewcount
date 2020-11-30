@@ -22,9 +22,9 @@ use doublesecretagency\viewcount\ViewCount;
 class ViewCountVariable
 {
 
-    public function filterByMemberName(string $filter)
+    public function filterByMemberName(array $filters)
     {
-        return ViewCount::$plugin->query->filterByMemberName($filter);
+        return ViewCount::$plugin->query->filterByMemberName($filters);
     }
 
     public function userHistory(int $userId)
