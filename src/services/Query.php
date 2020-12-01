@@ -30,13 +30,12 @@ use doublesecretagency\viewcount\records\UserHistory;
 class Query extends Component
 {
 
-    public function filterByMemberName(array $filters)
+    public function filterResults(array $filters)
     {
 
-        $member = explode(' ', $filters['member_name']);
-
-        $firstName = $member[0];
-        $lastName = $member[1];
+       $memberName = $this->getMemberNameFromFilters($filters['member_name']);
+       $title = $filters['entry_title'];
+     
 
         $rows = (new craft\db\Query())
                 ->select(['first_name', 
@@ -45,10 +44,41 @@ class Query extends Component
                 'user_country_id', 'title', 'type', 'author_first_name', 'author_last_name', 'companys_author_name',
                 'click', 'created'])
                 ->from('viewcount_s2nodeanalytics')
-                ->where(['first_name' => $firstName, 'last_name' => $lastName])
+                ->where(['like', 'first_name', $memberName['first_name'], false])
+                ->andWhere(['like', 'last_name', $memberName['last_name'], false])
+      //          ->andWhere(['title LIKE' => $title])
                 ->all();
 
         return $rows;
+    }
+
+    private function getTitleFromFilters($filters):string
+    {
+        if(array_key_exists('entry_title', $filters)){
+            $title = !empty($filters['entry_title']) ? empty($filters['entry_title']) : '*';
+        }else{
+            $title = '*';
+        }
+
+        return $title;
+
+    }
+
+    private function getMemberNameFromFilters(string $filter):array
+    {
+        $memberName = array(); 
+
+        if($filter != ''){
+            $member = explode(' ', $filter);
+            $memberName['first_name']  = '%' . $member[0] . '%';
+            $memberName['last_name'] = '%' . $member[1] . '%';
+        }else{
+            $memberName['first_name'] = '%%';
+            $memberName['last_name'] = '%%'; 
+        }
+
+        return $memberName;
+
     }
 
     //
