@@ -46,7 +46,7 @@ class Query extends Component
                 ->from('viewcount_s2nodeanalytics')
                 ->where(['like', 'first_name', $memberName['first_name'], false])
                 ->andWhere(['like', 'last_name', $memberName['last_name'], false])
-      //          ->andWhere(['title LIKE' => $title])
+                ->andWhere(['like', 'title', $title, false])
                 ->all();
 
         return $rows;
