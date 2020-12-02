@@ -33,8 +33,17 @@ class Query extends Component
     public function filterResults(array $filters)
     {
 
-       $memberName = $this->getMemberNameFromFilters($filters['member_name']);
+       $memberName = $this->splitNameFromFilters($filters['member_name']);
        $title = $filters['entry_title'];
+       $companyAuthor = $filters['company_author'];
+       $entryCompany = $filters['entry_company'];
+       $entryType = $filters['entry_type'];
+       $clickedOn = $filters['clicked_on'];
+       $topics = $filters['topics'];
+       $author = $this->splitNameFromFilters($filters['author']);
+       $dateFrom = $filters['date_from'];
+       $dateTo = $filters['date_to'];
+       $consentNeeded = $filters['consent_needed'];
      
 
         $rows = (new craft\db\Query())
@@ -47,24 +56,22 @@ class Query extends Component
                 ->where(['like', 'first_name', $memberName['first_name'], false])
                 ->andWhere(['like', 'last_name', $memberName['last_name'], false])
                 ->andWhere(['like', 'title', $title, false])
+                ->andWhere(['like', 'companys_author_name', $companyAuthor, false])
+                ->andWhere(['like', 'company_name', $entryCompany, false])
+                ->andWhere(['type' => $entryType])
+                ->andWhere(['clicked_on' => $clickedOn])
+                ->andWhere(['topics' => $topics])
+                ->andWhere(['like', 'author_first_name', $author['first_name'], false])
+                ->andWhere(['like', 'author_last_name', $author['last_name'], false])
+                ->andWhere(['consent_needed' => $consentNeeded])
+                ->andWhere(['created' => $dateFrom])
+                ->andWhere(['created' <= $dateTo])
                 ->all();
 
         return $rows;
     }
 
-    private function getTitleFromFilters($filters):string
-    {
-        if(array_key_exists('entry_title', $filters)){
-            $title = !empty($filters['entry_title']) ? empty($filters['entry_title']) : '*';
-        }else{
-            $title = '*';
-        }
-
-        return $title;
-
-    }
-
-    private function getMemberNameFromFilters(string $filter):array
+    private function splitNameFromFilters(string $filter):array
     {
         $memberName = array(); 
 
