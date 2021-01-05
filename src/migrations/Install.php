@@ -35,7 +35,7 @@ class Install extends Migration
      */
     public function safeDown()
     {
-        $this->dropTableIfExists('{{%viewcount_s2nodeanalytics}}');
+        $this->dropTableIfExists('{{%viewcount_entryanalytics}}');
         $this->dropTableIfExists('{{%viewcount_elementtotals}}');
         $this->dropTableIfExists('{{%viewcount_viewlog}}');
         $this->dropTableIfExists('{{%viewcount_userhistories}}');
@@ -46,14 +46,14 @@ class Install extends Migration
      */
     protected function createTables()
     {
-        $this->createTable('{{%viewcount_s2nodeanalytics}}', [
+        $this->createTable('{{%viewcount_entryanalytics}}', [
             'id'          => $this->primaryKey(),
-            'nid'   => $this->integer()->notNull(),
-             'nid_version' => $this->string(),
+            's2_nid'   => $this->integer()->notNull(),                 // s2
+            'elementId' => $this->integer()->notNull(),             // s3
             'title'     => $this->string()->notNull(),
             'type'     => $this->string(),
-            'uid'   => $this->integer()->notNull(),
-            'uid_version' => $this->string(),
+            's2_uid'   => $this->integer()->notNull(),              // s2
+            'uid' => $this->string(),                               // s3
             'first_name'     => $this->string(),
             'last_name'     => $this->string(),
             'job_title'     => $this->string(),
@@ -61,16 +61,20 @@ class Install extends Migration
             'email'     => $this->string(),
             'phone'     => $this->string(),
             'user_city'     => $this->string(),
-            'user_country_id'   => $this->integer(),
+            's2_user_country_id'   => $this->integer(),             // s2
+            'user_country_id'   => $this->integer(),                // s3
             'click' => $this->boolean()->notNull(),
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
-            'author_company_nid'   => $this->integer(),
+            's2_author_company_nid'   => $this->integer(),             // s2
+            'author_company_elementId'   => $this->integer(),       // s3
             'author_company_title' => $this->string(),
-            'companys_author_uid'   => $this->integer(),
+            's2_companys_author_uid'   => $this->integer(),         // s2
+            'companys_author_uid'   => $this->integer(),            // s3
             'companys_author_name' => $this->string(),
-            'node_companys_nid'   => $this->integer(),
-            'node_companys_title' => $this->string(),
+            's2_node_companys_nid'   => $this->integer(),              // s2
+            'entry_companys_elementId'   => $this->integer(),       // s3
+            'entry_companys_title' => $this->string(),
             'author_first_name' => $this->string(),
             'author_last_name' => $this->string(),
             'created' => $this->integer()->notNull(),
@@ -116,7 +120,7 @@ class Install extends Migration
      */
     protected function createIndexes()
     {
-        $this->createIndex(null, '{{%viewcount_s2nodeanalytics}}', ['nid']);
+        $this->createIndex(null, '{{%viewcount_entryanalytics}}', ['nid']);
         $this->createIndex(null, '{{%viewcount_elementtotals}}', ['elementId']);
         $this->createIndex(null, '{{%viewcount_viewlog}}',       ['elementId']);
     }
