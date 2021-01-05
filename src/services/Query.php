@@ -41,8 +41,13 @@ class Query extends Component
        $clickedOn = $filters['clicked_on'];
        $topics = $filters['topics'];
        $author = $this->splitNameFromFilters($filters['author']);
-       $dateFrom = $filters['date_from'];
-       $dateTo = $filters['date_to'];
+
+       if(in_array('date_from', $filters)){
+            $dateFrom = $filters['date_from'];
+            $dateTo = $filters['date_to'];
+       }
+
+       // Additional
        $consentNeeded = $filters['consent_needed'];
      
 
@@ -59,13 +64,13 @@ class Query extends Component
                 ->andWhere(['like', 'companys_author_name', $companyAuthor, false])
                 ->andWhere(['like', 'company_name', $entryCompany, false])
                 ->andWhere(['type' => $entryType])
-                ->andWhere(['clicked_on' => $clickedOn])
-                ->andWhere(['topics' => $topics])
+        //        ->andWhere(['clicked_on' => $clickedOn])
+        //       ->andWhere(['topics' => $topics])
                 ->andWhere(['like', 'author_first_name', $author['first_name'], false])
-                ->andWhere(['like', 'author_last_name', $author['last_name'], false])
-                ->andWhere(['consent_needed' => $consentNeeded])
-                ->andWhere(['created' => $dateFrom])
-                ->andWhere(['created' <= $dateTo])
+           //     ->andWhere(['like', 'author_last_name', $author['last_name'], false])
+           //     ->andWhere(['consent_needed' => $consentNeeded])
+           //     ->andWhere(['created' => $dateFrom])
+           //     ->andWhere(['created' <= $dateTo])
                 ->all();
 
         return $rows;
@@ -77,12 +82,19 @@ class Query extends Component
 
         if($filter != ''){
             $member = explode(' ', $filter);
-            $memberName['first_name']  = '%' . $member[0] . '%';
-            $memberName['last_name'] = '%' . $member[1] . '%';
         }else{
             $memberName['first_name'] = '%%';
             $memberName['last_name'] = '%%'; 
+            return $memberName;
         }
+
+        if(sizeof($member) > 1){
+            $memberName['first_name']  = '%' . $member[0] . '%';
+            $memberName['last_name'] = '%' . $member[1] . '%';
+        }else{
+            $memberName['first_name']  = '%' . $member[0] . '%';
+            $memberName['last_name'] = '%%'; 
+        } 
 
         return $memberName;
 
