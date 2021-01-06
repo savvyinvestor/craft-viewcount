@@ -52,25 +52,48 @@ class Query extends Component
      
 
         $rows = (new craft\db\Query())
-                ->select(['first_name', 
-                'last_name', 'job_title',
-                'company_name', 'email', 'phone','user_city',
-                'user_country_id', 'title', 'type', 'author_first_name', 'author_last_name', 'companys_author_name',
-                'click', 'created'])
-                ->from('viewcount_s2nodeanalytics')
-                ->where(['like', 'first_name', $memberName['first_name'], false])
-                ->andWhere(['like', 'last_name', $memberName['last_name'], false])
-                ->andWhere(['like', 'title', $title, false])
-                ->andWhere(['like', 'companys_author_name', $companyAuthor, false])
-                ->andWhere(['like', 'company_name', $entryCompany, false])
-                ->andWhere(['type' => $entryType])
-        //        ->andWhere(['clicked_on' => $clickedOn])
-        //       ->andWhere(['topics' => $topics])
-                ->andWhere(['like', 'author_first_name', $author['first_name'], false])
-           //     ->andWhere(['like', 'author_last_name', $author['last_name'], false])
-           //     ->andWhere(['consent_needed' => $consentNeeded])
-           //     ->andWhere(['created' => $dateFrom])
-           //     ->andWhere(['created' <= $dateTo])
+                ->select([
+                'members.firstName', 
+                'members.lastName', 
+                'members.email',
+                'c.title',
+                'c.field_paperType',
+                'c.dateCreated',
+                'c.field_country',
+                'c.field_city',
+                'cont_auth.field_userCompanyName',
+                'c.field_jobTitle',
+                'c.field_consentNeeded', 
+                'users_auth.firstName', 
+                'users_auth.lastName',
+                'topics.title'
+                ])
+                ->from('viewcount_viewlog')
+                ->leftJoin('{{%content}} c', '[[viewcount_viewlog.elementId]] = [[c.elementId]]')
+                ->innerJoin('{{%entries}}', '[[entries.id]] = [[c.elementId]]')
+                ->leftJoin('{{%users}} members', '[[viewcount_viewlog.userId]] = [[members.id]]')
+                ->leftJoin('{{%content}} cont_auth', '[[c.elementId]] = [[entries.authorId]]')
+                ->leftJoin('{{%users}} users_auth', '[[entries.authorId]] = [[members.id]]')
+                ->innerJoin('{{%relations}}', '[[entries.id]] = [[relations.sourceId]]')
+                ->innerJoin('{{%categories}}', '[[categories.id]] = [[relations.targetId]]')
+                ->leftJoin('{{%content}} topics', '[[categories.id]] = [[topics.elementId]]')
+
+                // ->where(['like', 'first_name', $memberName['first_name'], false])
+                // ->andWhere(['like', 'last_name', $memberName['last_name'], false])
+                // ->andWhere(['like', 'title', $title, false])
+                // ->andWhere(['like', 'companys_author_name', $companyAuthor, false])
+                // ->andWhere(['like', 'company_name', $entryCompany, false])
+                // ->andWhere(['type' => $entryType])
+                // ->andWhere(['clicked_on' => $clickedOn])
+                // ->andWhere(['topics' => $topics])
+                // ->andWhere(['like', 'author_first_name', $author['first_name'], false])
+                // ->andWhere(['like', 'author_last_name', $author['last_name'], false])
+                // ->andWhere(['consent_needed' => $consentNeeded])
+                // ->andWhere(['created' => $dateFrom])
+                // ->andWhere(['created' <= $dateTo])
+                // ->all();
+
+                ->where(['c.id' => 725089])
                 ->all();
 
         return $rows;
@@ -174,5 +197,54 @@ class Query extends Component
         // Return elementIds
         return array_reverse($elementIds);
     }
+
+
+    // == DEPRECATED ==
+    // public function filterResults(array $filters)
+    // {
+
+    //    $memberName = $this->splitNameFromFilters($filters['member_name']);
+    //    $title = $filters['entry_title'];
+    //    $companyAuthor = $filters['company_author'];
+    //    $entryCompany = $filters['entry_company'];
+    //    $entryType = $filters['entry_type'];
+    //    $clickedOn = $filters['clicked_on'];
+    //    $topics = $filters['topics'];
+    //    $author = $this->splitNameFromFilters($filters['author']);
+
+    //    if(in_array('date_from', $filters)){
+    //         $dateFrom = $filters['date_from'];
+    //         $dateTo = $filters['date_to'];
+    //    }
+
+    //    // Additional
+    //    $consentNeeded = $filters['consent_needed'];
+     
+
+    //     $rows = (new craft\db\Query())
+    //             ->select(['first_name', 
+    //             'last_name', 'job_title',
+    //             'company_name', 'email', 'phone','user_city',
+    //             'user_country_id', 'title', 'type', 'author_first_name', 'author_last_name', 'companys_author_name',
+    //             'click', 'created'])
+    //             ->from('viewcount_s2nodeanalytics')
+    //             ->where(['like', 'first_name', $memberName['first_name'], false])
+    //             ->andWhere(['like', 'last_name', $memberName['last_name'], false])
+    //             ->andWhere(['like', 'title', $title, false])
+    //             ->andWhere(['like', 'companys_author_name', $companyAuthor, false])
+    //             ->andWhere(['like', 'company_name', $entryCompany, false])
+    //             ->andWhere(['type' => $entryType])
+    //     //        ->andWhere(['clicked_on' => $clickedOn])
+    //     //       ->andWhere(['topics' => $topics])
+    //             ->andWhere(['like', 'author_first_name', $author['first_name'], false])
+    //        //     ->andWhere(['like', 'author_last_name', $author['last_name'], false])
+    //        //     ->andWhere(['consent_needed' => $consentNeeded])
+    //        //     ->andWhere(['created' => $dateFrom])
+    //        //     ->andWhere(['created' <= $dateTo])
+    //             ->all();
+
+    //     return $rows;
+    // }
+
 
 }
