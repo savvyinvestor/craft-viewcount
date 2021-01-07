@@ -53,30 +53,31 @@ class Query extends Component
 
         $rows = (new craft\db\Query())
                 ->select([
-                'members.firstName', 
-                'members.lastName', 
-                'members.email',
-                'c.title',
-                'c.field_paperType',
-                'c.dateCreated',
-                'c.field_country',
-                'c.field_city',
-                'cont_auth.field_userCompanyName',
-                'c.field_jobTitle',
-                'c.field_consentNeeded', 
-                'users_auth.firstName', 
-                'users_auth.lastName',
-                'topics.title'
+                'users_members.firstName as first_name', 
+                'users_members.lastName as last_name', 
+                'users_members.email as email',
+                'c.title as entry_title',
+                'c.field_paperType as type',
+                'c.dateCreated as created',
+                'content_users.field_country as user_country',
+                'content_users.field_city as user_city',
+                'content_users.field_userCompanyName as company_author',
+                'content_users.field_jobTitle as job_title',
+                'content_authors.field_consentNeeded as consent_needed', 
+                'users_authors.firstName as author_first_name', 
+                'users_authors.lastName as author_last_name',
+                'topics.title as topics'
                 ])
                 ->from('viewcount_viewlog')
-                ->leftJoin('{{%content}} c', '[[viewcount_viewlog.elementId]] = [[c.elementId]]')
+                ->innerJoin('{{%content}} c', '[[viewcount_viewlog.elementId]] = [[c.elementId]]')
                 ->innerJoin('{{%entries}}', '[[entries.id]] = [[c.elementId]]')
-                ->leftJoin('{{%users}} members', '[[viewcount_viewlog.userId]] = [[members.id]]')
-                ->leftJoin('{{%content}} cont_auth', '[[c.elementId]] = [[entries.authorId]]')
-                ->leftJoin('{{%users}} users_auth', '[[entries.authorId]] = [[members.id]]')
+                ->innerJoin('{{%users}} users_members', '[[viewcount_viewlog.userId]] = [[users_members.id]]')
                 ->innerJoin('{{%relations}}', '[[entries.id]] = [[relations.sourceId]]')
                 ->innerJoin('{{%categories}}', '[[categories.id]] = [[relations.targetId]]')
                 ->leftJoin('{{%content}} topics', '[[categories.id]] = [[topics.elementId]]')
+                ->leftJoin('{{%content}} content_authors', '[[content_authors.elementId]] = [[entries.authorId]]')
+                ->leftJoin('{{%users}} users_authors', '[[entries.authorId]] = [[users_authors.id]]')
+                ->leftJoin('{{%content}} content_users', '[[content_users.elementId]] = [[users_members.id]]')
 
                 // ->where(['like', 'first_name', $memberName['first_name'], false])
                 // ->andWhere(['like', 'last_name', $memberName['last_name'], false])
