@@ -33,10 +33,13 @@ class Query extends Component
     public function filterResults(array $filters)
     {
 
+       $paperId = $filters['paper_id'];
+       $memberId = $filters['member_id'];
+       $companyId = $filters['company_id'];
        $memberName = $this->splitNameFromFilters($filters['member_name']);
        $title = $filters['entry_title'];
-       $companyAuthor = $filters['company_author'];
-       $entryCompany = $filters['entry_company'];
+    //    $companyAuthor = $filters['author_company'];
+    //    $memberCompany = $filters['member_company'];
        $entryType = $filters['entry_type'];
        $clickedOn = $filters['clicked_on'];
        $topics = $filters['topics'];
@@ -53,20 +56,26 @@ class Query extends Component
 
         $rows = (new craft\db\Query())
                 ->select([
-                'users_members.firstName as first_name', 
-                'users_members.lastName as last_name', 
-                'users_members.email as email',
-                'c.title as entry_title',
-                'c.field_paperType as type',
-                'c.dateCreated as created',
-                'content_users.field_country as user_country',
-                'content_users.field_city as user_city',
-                'content_users.field_userCompanyName as company_author',
-                'content_users.field_jobTitle as job_title',
-                'content_authors.field_consentNeeded as consent_needed', 
-                'users_authors.firstName as author_first_name', 
-                'users_authors.lastName as author_last_name',
-                'topics.title as topics'
+                    'c.id as paper_id',
+                    'content_users.id as member_id',
+                    'content_authors.id as company_id',
+                    'users_members.firstName as first_name', 
+                    'users_members.lastName as last_name', 
+                    'c.title as entry_title',
+                    'content_users.field_userCompanyName as member_company',
+                    'content_authors.field_userCompanyName as author_company',
+
+                    'users_members.email as email',
+                    'c.field_paperType as type',
+                    'c.dateCreated as created',
+                    'content_users.field_country as user_country',
+                    'content_users.field_city as user_city',
+                    'content_users.field_jobTitle as job_title',
+                    'content_authors.field_consentNeeded as consent_needed', 
+                    'users_authors.firstName as author_first_name', 
+                    'users_authors.lastName as author_last_name',
+                    'topics.title as topics'
+
                 ])
                 ->from('viewcount_viewlog')
                 ->innerJoin('{{%content}} c', '[[viewcount_viewlog.elementId]] = [[c.elementId]]')
@@ -94,7 +103,7 @@ class Query extends Component
                 // ->andWhere(['created' <= $dateTo])
                 // ->all();
 
-                ->where(['c.id' => 725089])
+                ->where(['content_authors.id' => $companyId])
                 ->all();
 
         return $rows;
