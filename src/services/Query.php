@@ -23,7 +23,7 @@ use doublesecretagency\viewcount\ViewCount;
 use doublesecretagency\viewcount\records\ElementTotal;
 use doublesecretagency\viewcount\records\UserHistory;
 
-set_time_limit(120);
+set_time_limit(180);
 /**
  * Class Query
  * @since 1.0.0
@@ -39,15 +39,12 @@ class Query extends Component
        $companyId = $filters['company_id'];
        $memberFirstName = $filters['member_first_name'];
        $memberLastName = $filters['member_last_name'];
-
        $authorFirstName = $filters['author_first_name'];
        $authorLastName = $filters['author_last_name'];
-
        $paperTitle = $filters['paper_title'];
-
        $authorCompany = $filters['author_company'];
-        $memberCompany = $filters['member_company'];
-       $entryType = $filters['entry_type'];
+       $memberCompany = $filters['member_company'];
+       $entryType = (int) $filters['entry_type'];
        $clickedOn = $filters['clicked_on'];
        $topics = $filters['topics'];
   //     $author = $this->splitNameFromFilters($filters['author']);
@@ -65,13 +62,14 @@ class Query extends Component
                 ->select([
                     'c.id as paper_id',
                     'content_members.id as member_id',
-                    'content_authors.id as author_id',
+                    'content_authors.id as author_company_id',
                     'users_members.firstName as member_first_name', 
                     'users_members.lastName as member_last_name', 
+                    'users_authors.firstName as author_first_name', 
+                    'users_authors.lastName as author_last_name',
                     'c.title as paper_title',
                     'content_members.field_userCompanyName as member_company',
                     'content_authors.field_userCompanyName as author_company',
-
                     'users_members.email as member_email',
                     'c.field_paperType as type',
                     'c.dateCreated as created',
@@ -79,14 +77,12 @@ class Query extends Component
                     'content_members.field_city as member_city',
                     'content_members.field_jobTitle as member_job_title',
                     'content_authors.field_consentNeeded as company_consent_needed', 
-                    'users_authors.firstName as author_first_name', 
-                    'users_authors.lastName as author_last_name',
                     'topics.title as topics'
 
                 ])
                 ->from('viewcount_viewlog')
                 ->innerJoin('{{%content}} c', '[[viewcount_viewlog.elementId]] = [[c.elementId]]')
-                ->innerJoin('{{%entries}}', '[[entries.id]] = [[c.elementId]]')
+                ->innerJoin('{{%entries}} entries', '[[entries.id]] = [[c.elementId]]')
                 ->innerJoin('{{%users}} users_members', '[[viewcount_viewlog.userId]] = [[users_members.id]]')
                 ->innerJoin('{{%relations}}', '[[entries.id]] = [[relations.sourceId]]')
                 ->innerJoin('{{%categories}}', '[[categories.id]] = [[relations.targetId]]')
@@ -95,15 +91,15 @@ class Query extends Component
                 ->leftJoin('{{%users}} users_authors', '[[entries.authorId]] = [[users_authors.id]]')
                 ->leftJoin('{{%content}} content_members', '[[content_members.elementId]] = [[users_members.id]]')
 
-                // ->where([])      // Paper ID
-                // ->andWhere([])   // Member ID
-                // ->andWhere([])   // Company ID
-                // ->andWhere([])   // Member first name
-                // ->andWhere([])   // Member last name
-                // ->andWhere([])   // Author first name
-                // ->andWhere([])   // Author last name
-                // ->andWhere([])   // Paper title
-                // ->andWhere([])   // Author company
+                // ->where([c.id => $paperId])      // Paper ID
+                // ->andWhere([content_members.id => $memberId])   // Member ID
+                // ->andWhere([content_authors.id => $companyId])   // Company ID
+                // ->andWhere([users_members.firstName => $memberFirstName])   // Member first name
+                // ->andWhere([users_members.lastName => $memberLastName])   // Member last name
+                // ->andWhere([users_authors.firstName => $authorFirstName])   // Author first name
+                // ->andWhere([users_authors.lastName => $authorLastName])   // Author last name
+                // ->andWhere([c.title => $paperTitle])   // Paper title
+                // ->andWhere([content_authors.field_userCompanyName => $authorCompany])   // Author company
                 // ->andWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
                 // ->andWhere(['type' => $entryType])   // Entry type
                 // ->andWhere(['clicked_on' => $clickedOn]) // Clicked on
@@ -113,7 +109,7 @@ class Query extends Component
                 // ->andWhere(['created' <= $dateTo])
                 // ->all();
 
-                ->where(['content_members.field_userCompanyName' => $memberCompany])
+                ->where(['entries.typeId' => $entryType])
                 ->all();
 
         return $rows;
