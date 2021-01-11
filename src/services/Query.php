@@ -1,4 +1,5 @@
 <?php
+
 /**
  * View Count plugin for Craft CMS
  *
@@ -22,7 +23,7 @@ use doublesecretagency\viewcount\ViewCount;
 use doublesecretagency\viewcount\records\ElementTotal;
 use doublesecretagency\viewcount\records\UserHistory;
 
-
+set_time_limit(120);
 /**
  * Class Query
  * @since 1.0.0
@@ -36,14 +37,20 @@ class Query extends Component
        $paperId = $filters['paper_id'];
        $memberId = $filters['member_id'];
        $companyId = $filters['company_id'];
-       $memberName = $this->splitNameFromFilters($filters['member_name']);
-       $title = $filters['entry_title'];
-    //    $companyAuthor = $filters['author_company'];
-    //    $memberCompany = $filters['member_company'];
+       $memberFirstName = $filters['member_first_name'];
+       $memberLastName = $filters['member_last_name'];
+
+       $authorFirstName = $filters['author_first_name'];
+       $authorLastName = $filters['author_last_name'];
+
+       $paperTitle = $filters['paper_title'];
+
+       $authorCompany = $filters['author_company'];
+        $memberCompany = $filters['member_company'];
        $entryType = $filters['entry_type'];
        $clickedOn = $filters['clicked_on'];
        $topics = $filters['topics'];
-       $author = $this->splitNameFromFilters($filters['author']);
+  //     $author = $this->splitNameFromFilters($filters['author']);
 
        if(in_array('date_from', $filters)){
             $dateFrom = $filters['date_from'];
@@ -57,21 +64,21 @@ class Query extends Component
         $rows = (new craft\db\Query())
                 ->select([
                     'c.id as paper_id',
-                    'content_users.id as member_id',
-                    'content_authors.id as company_id',
-                    'users_members.firstName as first_name', 
-                    'users_members.lastName as last_name', 
-                    'c.title as entry_title',
-                    'content_users.field_userCompanyName as member_company',
+                    'content_members.id as member_id',
+                    'content_authors.id as author_id',
+                    'users_members.firstName as member_first_name', 
+                    'users_members.lastName as member_last_name', 
+                    'c.title as paper_title',
+                    'content_members.field_userCompanyName as member_company',
                     'content_authors.field_userCompanyName as author_company',
 
-                    'users_members.email as email',
+                    'users_members.email as member_email',
                     'c.field_paperType as type',
                     'c.dateCreated as created',
-                    'content_users.field_country as user_country',
-                    'content_users.field_city as user_city',
-                    'content_users.field_jobTitle as job_title',
-                    'content_authors.field_consentNeeded as consent_needed', 
+                    'content_members.field_country as member_country',
+                    'content_members.field_city as member_city',
+                    'content_members.field_jobTitle as member_job_title',
+                    'content_authors.field_consentNeeded as company_consent_needed', 
                     'users_authors.firstName as author_first_name', 
                     'users_authors.lastName as author_last_name',
                     'topics.title as topics'
@@ -86,24 +93,27 @@ class Query extends Component
                 ->leftJoin('{{%content}} topics', '[[categories.id]] = [[topics.elementId]]')
                 ->leftJoin('{{%content}} content_authors', '[[content_authors.elementId]] = [[entries.authorId]]')
                 ->leftJoin('{{%users}} users_authors', '[[entries.authorId]] = [[users_authors.id]]')
-                ->leftJoin('{{%content}} content_users', '[[content_users.elementId]] = [[users_members.id]]')
+                ->leftJoin('{{%content}} content_members', '[[content_members.elementId]] = [[users_members.id]]')
 
-                // ->where(['like', 'first_name', $memberName['first_name'], false])
-                // ->andWhere(['like', 'last_name', $memberName['last_name'], false])
-                // ->andWhere(['like', 'title', $title, false])
-                // ->andWhere(['like', 'companys_author_name', $companyAuthor, false])
-                // ->andWhere(['like', 'company_name', $entryCompany, false])
-                // ->andWhere(['type' => $entryType])
-                // ->andWhere(['clicked_on' => $clickedOn])
-                // ->andWhere(['topics' => $topics])
-                // ->andWhere(['like', 'author_first_name', $author['first_name'], false])
-                // ->andWhere(['like', 'author_last_name', $author['last_name'], false])
-                // ->andWhere(['consent_needed' => $consentNeeded])
+                // ->where([])      // Paper ID
+                // ->andWhere([])   // Member ID
+                // ->andWhere([])   // Company ID
+                // ->andWhere([])   // Member first name
+                // ->andWhere([])   // Member last name
+                // ->andWhere([])   // Author first name
+                // ->andWhere([])   // Author last name
+                // ->andWhere([])   // Paper title
+                // ->andWhere([])   // Author company
+                // ->andWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
+                // ->andWhere(['type' => $entryType])   // Entry type
+                // ->andWhere(['clicked_on' => $clickedOn]) // Clicked on
+                // ->andWhere(['topics' => $topics])    // Topics
+                // ->andWhere([])   // Consent needed
                 // ->andWhere(['created' => $dateFrom])
                 // ->andWhere(['created' <= $dateTo])
                 // ->all();
 
-                ->where(['content_authors.id' => $companyId])
+                ->where(['content_members.field_userCompanyName' => $memberCompany])
                 ->all();
 
         return $rows;
