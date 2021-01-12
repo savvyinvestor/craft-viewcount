@@ -14,6 +14,7 @@ namespace doublesecretagency\viewcount\variables;
 use craft\elements\db\ElementQuery;
 use doublesecretagency\viewcount\ViewCount;
 
+ini_set('memory_limit', '1024M');
 
 /**
  * Class ViewCountVariable

@@ -23,7 +23,6 @@ use doublesecretagency\viewcount\ViewCount;
 use doublesecretagency\viewcount\records\ElementTotal;
 use doublesecretagency\viewcount\records\UserHistory;
 
-set_time_limit(180);
 /**
  * Class Query
  * @since 1.0.0
@@ -47,18 +46,19 @@ class Query extends Component
        $entryType = (int) $filters['entry_type'];
        $clickedOn = $filters['clicked_on'];
        $topics = $filters['topics'];
-  //     $author = $this->splitNameFromFilters($filters['author']);
 
-       if(in_array('date_from', $filters)){
+       if($filters['limit_by_daterange'] == '1'){
             $dateFrom = $filters['date_from'];
             $dateTo = $filters['date_to'];
+       }else{
+            $dateFrom = '';
+            $dateTo = '';
        }
 
        // Additional
-       $consentNeeded = $filters['consent_needed'];
+       $consentNeeded = (int) $filters['consent_needed'];
      
-
-        $rows = (new craft\db\Query())
+       $rows = (new craft\db\Query())
                 ->select([
                     'c.id as paper_id',
                     'content_members.id as member_id',
@@ -82,14 +82,56 @@ class Query extends Component
                 ])
                 ->from('viewcount_viewlog')
                 ->innerJoin('{{%content}} c', '[[viewcount_viewlog.elementId]] = [[c.elementId]]')
-                ->innerJoin('{{%entries}} entries', '[[entries.id]] = [[c.elementId]]')
+                ->innerJoin('{{%entries}} e', '[[e.id]] = [[c.elementId]]')
                 ->innerJoin('{{%users}} users_members', '[[viewcount_viewlog.userId]] = [[users_members.id]]')
-                ->innerJoin('{{%relations}}', '[[entries.id]] = [[relations.sourceId]]')
+                ->innerJoin('{{%relations}}', '[[e.id]] = [[relations.sourceId]]')
                 ->innerJoin('{{%categories}}', '[[categories.id]] = [[relations.targetId]]')
                 ->leftJoin('{{%content}} topics', '[[categories.id]] = [[topics.elementId]]')
-                ->leftJoin('{{%content}} content_authors', '[[content_authors.elementId]] = [[entries.authorId]]')
-                ->leftJoin('{{%users}} users_authors', '[[entries.authorId]] = [[users_authors.id]]')
+                ->leftJoin('{{%content}} content_authors', '[[content_authors.elementId]] = [[e.authorId]]')
+                ->leftJoin('{{%users}} users_authors', '[[e.authorId]] = [[users_authors.id]]')
                 ->leftJoin('{{%content}} content_members', '[[content_members.elementId]] = [[users_members.id]]')
+                ->filterWhere(['c.id' => $paperId])      // Paper ID
+                ->andFilterWhere(['content_members.id' => $memberId])   // Member ID
+                ->andFilterWhere(['content_authors.id' => $companyId])   // Company ID
+                ->andFilterWhere(['users_members.firstName' => $memberFirstName])   // Member first name
+                ->andFilterWhere(['users_members.lastName' => $memberLastName])   // Member last name
+                // ->andFilterWhere(['users_authors.firstName' => $authorFirstName])   // Author first name
+                // ->andFilterWhere(['users_authors.lastName' => $authorLastName])   // Author last name
+                // ->andFilterWhere(['c.title' => $paperTitle])   // Paper title
+                // ->andFilterWhere(['content_authors.field_userCompanyName' => $authorCompany])   // Author company
+                // ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
+                // ->andFilterWhere(['e.typeId' => $entryType])   // Entry type
+
+                // ->andFilterWhere(['clicked_on' => $clickedOn]) // Clicked on
+
+                // ->andFilterWhere(['in', 'topics.title', $topics])    // Topics
+                // ->andFilterWhere(['content_authors.field_consentNeeded' => $consentNeeded])   // Consent needed
+
+                ->andFilterWhere(['c.dateCreated' => $dateFrom])
+                // ->andFilterWhere(['c.dateCreated' <= $dateTo])
+                ->all();
+
+        return $rows;
+    }
+
+
+
+    /*
+    public function filterResults(array $filters)
+    {
+
+       $paperId = $filters['paper_id'];
+
+        $rows = (new craft\db\Query())
+                ->select([
+                    'c.id as paper_id',
+                    'e.id as entry_id'
+
+                ])
+                ->from('viewcount_viewlog')
+                ->innerJoin('{{%content}} c', '[[viewcount_viewlog.elementId]] = [[c.elementId]]')
+                ->innerJoin('{{%entries}} e', '[[e.id]] = [[c.elementId]]')
+               
 
                 // ->where([c.id => $paperId])      // Paper ID
                 // ->andWhere([content_members.id => $memberId])   // Member ID
@@ -109,11 +151,12 @@ class Query extends Component
                 // ->andWhere(['created' <= $dateTo])
                 // ->all();
 
-                ->where(['entries.typeId' => $entryType])
+                ->where(['e.typeId' => 2])
                 ->all();
 
         return $rows;
     }
+*/
 
     private function splitNameFromFilters(string $filter):array
     {
