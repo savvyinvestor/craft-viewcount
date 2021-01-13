@@ -43,7 +43,7 @@ class Query extends Component
        $paperTitle = $filters['paper_title'];
        $authorCompany = $filters['author_company'];
        $memberCompany = $filters['member_company'];
-       $entryType = (int) $filters['entry_type'];
+       $entryType = $filters['entry_type'];
        $clickedOn = $filters['clicked_on'];
        $topics = $filters['topics'];
 
@@ -56,7 +56,7 @@ class Query extends Component
        }
 
        // Additional
-       $consentNeeded = (int) $filters['consent_needed'];
+       $consentNeeded = $filters['consent_needed'];
      
        $rows = (new craft\db\Query())
                 ->select([
@@ -95,20 +95,17 @@ class Query extends Component
                 ->andFilterWhere(['content_authors.id' => $companyId])   // Company ID
                 ->andFilterWhere(['users_members.firstName' => $memberFirstName])   // Member first name
                 ->andFilterWhere(['users_members.lastName' => $memberLastName])   // Member last name
-                // ->andFilterWhere(['users_authors.firstName' => $authorFirstName])   // Author first name
-                // ->andFilterWhere(['users_authors.lastName' => $authorLastName])   // Author last name
-                // ->andFilterWhere(['c.title' => $paperTitle])   // Paper title
-                // ->andFilterWhere(['content_authors.field_userCompanyName' => $authorCompany])   // Author company
-                // ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
-                // ->andFilterWhere(['e.typeId' => $entryType])   // Entry type
-
+                ->andFilterWhere(['users_authors.firstName' => $authorFirstName])   // Author first name
+                ->andFilterWhere(['users_authors.lastName' => $authorLastName])   // Author last name
+                ->andFilterWhere(['c.title' => $paperTitle])   // Paper title
+                ->andFilterWhere(['content_authors.field_userCompanyName' => $authorCompany])   // Author company
+                ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
                 // ->andFilterWhere(['clicked_on' => $clickedOn]) // Clicked on
-
-                // ->andFilterWhere(['in', 'topics.title', $topics])    // Topics
-                // ->andFilterWhere(['content_authors.field_consentNeeded' => $consentNeeded])   // Consent needed
-
-                ->andFilterWhere(['c.dateCreated' => $dateFrom])
-                // ->andFilterWhere(['c.dateCreated' <= $dateTo])
+                ->andFilterWhere(['in', 'topics.title', $topics])    // Topics
+                ->andFilterWhere(['e.typeId' => $entryType])   // Entry type
+                ->andFilterWhere(['content_authors.field_consentNeeded' => $consentNeeded])   // Consent needed
+                ->andFilterWhere(['>', 'UNIX_TIMESTAMP(c.dateCreated)', $dateFrom])
+                ->andFilterWhere(['<', 'UNIX_TIMESTAMP(c.dateCreated)', $dateTo])
                 ->all();
 
         return $rows;
