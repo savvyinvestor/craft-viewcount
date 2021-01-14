@@ -50,9 +50,14 @@ class IncrementController extends Controller
         // Get POST values
         $elementId = $request->getBodyParam('id');
         $key       = $request->getBodyParam('key');
+        $clickedOn = $request->getBodyParam('clicked_on');
+
+        if($clickedOn==null||$clickedOn=''){
+            $clickedOn = 'entry';
+        }
 
         // Increment view counter
-        $response = ViewCount::$plugin->view->increment($elementId, $key);
+        $response = ViewCount::$plugin->view->increment($elementId, $key, $clickedOn);
 
         // Return response
         return $this->asJson($response);

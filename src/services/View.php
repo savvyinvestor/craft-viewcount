@@ -228,7 +228,7 @@ class View extends Component
     }
 
     //
-    private function _updateViewLog($elementId, $key, $userId)
+    private function _updateViewLog($elementId, $key, $userId, $clickedOn = 'entry')
     {
         // If not keeping a view log, bail
         if (!ViewCount::$plugin->getSettings()->keepViewLog) {
@@ -245,7 +245,7 @@ class View extends Component
         $record->userId    = $userId;
         $record->ipAddress = $request->getUserIP();
         $record->userAgent = $request->getUserAgent();
-
+        $record->clickedOn = $clickedOn;
         // Save
         return $record->save();
     }

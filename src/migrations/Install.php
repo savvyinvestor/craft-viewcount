@@ -95,6 +95,7 @@ class Install extends Migration
             'id'          => $this->primaryKey(),
             'elementId'   => $this->integer()->notNull(),
             'viewKey'     => $this->string(),
+            'clickedOn'   => $this->string(),
             'userId'      => $this->integer(),
             'ipAddress'   => $this->string(),
             'userAgent'   => $this->text(),
