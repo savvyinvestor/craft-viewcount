@@ -69,14 +69,14 @@ class Query extends Component
                     'users_authors.lastName as author_last_name',
                     'c.title as paper_title',
                     'content_members.field_userCompanyName as member_company',
-                    'content_authors.field_userCompanyName as author_company',
+                    'content_author_companies.title as author_company',
                     'users_members.email as member_email',
-                    'c.field_paperType as type',
+                    'et.name as type',
                     'c.dateCreated as created',
                     'content_members.field_country as member_country',
                     'content_members.field_city as member_city',
                     'content_members.field_jobTitle as member_job_title',
-                    'content_authors.field_consentNeeded as company_consent_needed', 
+                    'content_author_companies.field_consentNeeded as company_consent_needed', 
                     'topics.title as topics'
 
                 ])
@@ -86,10 +86,12 @@ class Query extends Component
                 ->innerJoin('{{%users}} users_members', '[[viewcount_viewlog.userId]] = [[users_members.id]]')
                 ->innerJoin('{{%relations}}', '[[e.id]] = [[relations.sourceId]]')
                 ->innerJoin('{{%categories}}', '[[categories.id]] = [[relations.targetId]]')
+                ->innerJoin('{{%entrytypes}} et', '[[e.typeId]] = [[et.id]]')
                 ->leftJoin('{{%content}} topics', '[[categories.id]] = [[topics.elementId]]')
                 ->leftJoin('{{%content}} content_authors', '[[content_authors.elementId]] = [[e.authorId]]')
                 ->leftJoin('{{%users}} users_authors', '[[e.authorId]] = [[users_authors.id]]')
                 ->leftJoin('{{%content}} content_members', '[[content_members.elementId]] = [[users_members.id]]')
+                ->leftJoin('{{%content}} content_author_companies', '[[content_author_companies.title]] = [[content_authors.field_userCompanyName]]')
                 ->filterWhere(['c.id' => $paperId])      // Paper ID
                 ->andFilterWhere(['content_members.id' => $memberId])   // Member ID
                 ->andFilterWhere(['content_authors.id' => $companyId])   // Company ID
