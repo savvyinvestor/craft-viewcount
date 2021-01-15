@@ -77,7 +77,8 @@ class Query extends Component
                     'content_members.field_city as member_city',
                     'content_members.field_jobTitle as member_job_title',
                     'content_author_companies.field_consentNeeded as company_consent_needed', 
-                    'topics.title as topics'
+                    'topics.title as topics',
+                    'viewcount_viewlog.viewKey as clicked_on'
 
                 ])
                 ->from('viewcount_viewlog')
@@ -102,7 +103,7 @@ class Query extends Component
                 ->andFilterWhere(['c.title' => $paperTitle])   // Paper title
                 ->andFilterWhere(['content_authors.field_userCompanyName' => $authorCompany])   // Author company
                 ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
-                // ->andFilterWhere(['clicked_on' => $clickedOn]) // Clicked on
+                ->andFilterWhere(['clicked_on' => $clickedOn]) // Clicked on
                 ->andFilterWhere(['in', 'topics.title', $topics])    // Topics
                 ->andFilterWhere(['e.typeId' => $entryType])   // Entry type
                 ->andFilterWhere(['content_authors.field_consentNeeded' => $consentNeeded])   // Consent needed
