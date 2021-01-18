@@ -72,7 +72,7 @@ class Query extends Component
                     'content_author_companies.title as author_company',
                     'users_members.email as member_email',
                     'et.name as type',
-                    'c.dateCreated as created',
+                    'viewcount_viewlog.dateCreated as created',
                     'content_members.field_country as member_country',
                     'content_members.field_city as member_city',
                     'content_members.field_jobTitle as member_job_title',
