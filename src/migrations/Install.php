@@ -103,6 +103,18 @@ class Install extends Migration
             'dateUpdated' => $this->dateTime()->notNull(),
             'uid'         => $this->uid(),
         ]);
+        $this->createTable('{{%viewcount_viewlog_conf}}', [
+            'id'          => $this->primaryKey(),
+            'elementId'   => $this->integer()->notNull(),
+            'viewKey'     => $this->string(),
+            'clickedOn'   => $this->string(),
+            'userId'      => $this->integer(),
+            'ipAddress'   => $this->string(),
+            'userAgent'   => $this->text(),
+            'dateCreated' => $this->dateTime()->notNull(),
+            'dateUpdated' => $this->dateTime()->notNull(),
+            'uid'         => $this->uid(),
+        ]);
         $this->createTable('{{%viewcount_userhistories}}', [
             'id'          => $this->integer()->notNull(),
             'history'     => $this->text(),
@@ -121,6 +133,7 @@ class Install extends Migration
         // $this->createIndex(null, '{{%viewcount_entryanalytics}}', ['nid']);
         $this->createIndex(null, '{{%viewcount_elementtotals}}', ['elementId']);
         $this->createIndex(null, '{{%viewcount_viewlog}}',       ['elementId']);
+        $this->createIndex(null, '{{%viewcount_viewlog_conf}}',       ['elementId']);
     }
 
     /**
@@ -132,6 +145,7 @@ class Install extends Migration
     {
         $this->addForeignKey(null, '{{%viewcount_elementtotals}}', ['elementId'], '{{%elements}}', ['id'], 'CASCADE');
         $this->addForeignKey(null, '{{%viewcount_viewlog}}',       ['elementId'], '{{%elements}}', ['id'], 'CASCADE');
+        $this->addForeignKey(null, '{{%viewcount_viewlog_conf}}',       ['elementId'], '{{%elements}}', ['id'], 'CASCADE');
         $this->addForeignKey(null, '{{%viewcount_userhistories}}', ['id'],        '{{%users}}',    ['id'], 'CASCADE');
     }
 
