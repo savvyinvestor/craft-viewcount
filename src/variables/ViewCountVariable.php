@@ -23,10 +23,19 @@ ini_set('memory_limit', '1024M');
 class ViewCountVariable
 {
 
-    public function filterResults(array $filters)
+
+    // --- FILTERS ---
+    public function filterNAResults(array $filters)
     {
-        return ViewCount::$plugin->query->filterResults($filters);
+        return ViewCount::$plugin->query->filterNAResults($filters);
     }
+
+    public function filterConfResults(array $filters)
+    {
+        return ViewCount::$plugin->query->filterConfResults($filters);
+    }
+
+    // --- END FILTERS ---
 
     public function userHistory(int $userId)
     {

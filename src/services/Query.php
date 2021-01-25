@@ -30,7 +30,77 @@ use doublesecretagency\viewcount\records\UserHistory;
 class Query extends Component
 {
 
-    public function filterResults(array $filters)
+
+    public function filterConfResults(array $filters)
+    {
+
+
+       $memberFirstName = $filters['paper_id'];
+       $memberLastName = $filters['member_id'];
+       $memberCompany = $filters['member_company'];
+       $authorCompany = $filters['author_company'];
+       $conferences = $filters['conferences'];
+       $companyAuthor = $filters['company_author'];
+       $clickedOn = $filters['clicked_on'];
+
+       if($filters['limit_by_daterange'] == '1'){
+            $dateFrom = $filters['date_from'];
+            $dateTo = $filters['date_to'];
+       }else{
+            $dateFrom = '';
+            $dateTo = '';
+       }
+
+       // Additional
+       $consentNeeded = $filters['consent_needed'];
+     
+       $rows = (new craft\db\Query())
+                ->select([
+                    'users_members.firstName as member_first_name', 
+                    'users_members.lastName as member_last_name',
+                    'content_members.field_jobTitle as member_job_title',
+                    'content_members.field_userCompanyName as member_company',
+                    'users_members.email as member_email',
+                    'content_members.field_city as member_city',
+                    'content_members.field_country as member_country',
+                    'c.title as conference_title',
+                    'content_author_companies.title as author_company',
+                    'c.field_country as conference_country',
+                    'c.field_city as conference_city',
+                    'c.date_start as conference_start_date',
+                    'users_authors.firstName as author_first_name',     // Authors Company Name
+                    'users_authors.lastName as author_last_name',       // Authors Company Name
+                    'content_author_companies.field_consentNeeded as company_consent_needed',
+                    'viewcount_viewlog_conf.dateCreated as created'
+
+                ])
+                ->from('viewcount_viewlog_conf')
+                ->innerJoin('{{%content}} c', '[[viewcount_viewlog_conf.elementId]] = [[c.elementId]]')
+                ->innerJoin('{{%entries}} e', '[[e.id]] = [[c.elementId]]')
+                ->innerJoin('{{%users}} users_members', '[[viewcount_viewlog_conf.userId]] = [[users_members.id]]')
+                ->innerJoin('{{%relations}}', '[[e.id]] = [[relations.sourceId]]')
+                ->innerJoin('{{%categories}}', '[[categories.id]] = [[relations.targetId]]')
+                ->innerJoin('{{%entrytypes}} et', '[[e.typeId]] = [[et.id]]')
+                ->leftJoin('{{%content}} topics', '[[categories.id]] = [[topics.elementId]]')
+                ->leftJoin('{{%content}} content_authors', '[[content_authors.elementId]] = [[e.authorId]]')
+                ->leftJoin('{{%users}} users_authors', '[[e.authorId]] = [[users_authors.id]]')
+                ->leftJoin('{{%content}} content_members', '[[content_members.elementId]] = [[users_members.id]]')
+                ->leftJoin('{{%content}} content_author_companies', '[[content_author_companies.title]] = [[content_authors.field_userCompanyName]]')
+                ->filterWhere(['users_members.firstName' => $memberFirstName])   // Member first name
+                ->andFilterWhere(['users_members.lastName' => $memberLastName])   // Member last name
+                ->andFilterWhere(['in', 'c.title', $conferences])    // Conference title
+                ->andFilterWhere(['content_authors.field_userCompanyName' => $authorCompany])   // Author company
+                ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
+                ->andFilterWhere(['clicked_on' => $clickedOn]) // Clicked on
+                ->andFilterWhere(['content_authors.field_consentNeeded' => $consentNeeded])   // Consent needed
+                ->andFilterWhere(['>', 'UNIX_TIMESTAMP(c.dateCreated)', $dateFrom])
+                ->andFilterWhere(['<', 'UNIX_TIMESTAMP(c.dateCreated)', $dateTo])
+                ->all();
+
+                return $rows;
+    }
+
+    public function filterNAResults(array $filters)
     {
 
        $paperId = $filters['paper_id'];
