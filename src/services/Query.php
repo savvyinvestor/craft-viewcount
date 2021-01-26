@@ -91,7 +91,7 @@ class Query extends Component
                 ->andFilterWhere(['in', 'c.title', $conferences])    // Conference title
                 ->andFilterWhere(['content_authors.field_userCompanyName' => $authorCompany])   // Author company
                 ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
-                ->andFilterWhere(['clicked_on' => $clickedOn]) // Clicked on
+                ->andFilterWhere(['viewKey' => $clickedOn]) // Clicked on
                 ->andFilterWhere(['content_authors.field_consentNeeded' => $consentNeeded])   // Consent needed
                 ->andFilterWhere(['>', 'UNIX_TIMESTAMP(c.dateCreated)', $dateFrom])
                 ->andFilterWhere(['<', 'UNIX_TIMESTAMP(c.dateCreated)', $dateTo])
@@ -173,7 +173,7 @@ class Query extends Component
                 ->andFilterWhere(['c.title' => $paperTitle])   // Paper title
                 ->andFilterWhere(['content_authors.field_userCompanyName' => $authorCompany])   // Author company
                 ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
-                ->andFilterWhere(['clicked_on' => $clickedOn]) // Clicked on
+                ->andFilterWhere(['viewKey' => $clickedOn]) // Clicked on
                 ->andFilterWhere(['in', 'topics.title', $topics])    // Topics
                 ->andFilterWhere(['e.typeId' => $entryType])   // Entry type
                 ->andFilterWhere(['content_authors.field_consentNeeded' => $consentNeeded])   // Consent needed
