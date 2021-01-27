@@ -35,8 +35,8 @@ class Query extends Component
     {
 
 
-       $memberFirstName = $filters['paper_id'];
-       $memberLastName = $filters['member_id'];
+       $memberFirstName = $filters['user_first_name'];
+       $memberLastName = $filters['user_last_name'];
        $memberCompany = $filters['member_company'];
        $authorCompany = $filters['author_company'];
        $conferences = $filters['conferences'];
@@ -52,7 +52,7 @@ class Query extends Component
        }
 
        // Additional
-       $consentNeeded = $filters['consent_needed'];
+    //   $consentNeeded = $filters['consent_needed'];
      
        $rows = (new craft\db\Query())
                 ->select([
@@ -67,7 +67,7 @@ class Query extends Component
                     'content_author_companies.title as author_company',
                     'c.field_country as conference_country',
                     'c.field_city as conference_city',
-                    'c.date_start as conference_start_date',
+                    'c.field_dateStart as conference_start_date',
                     'users_authors.firstName as author_first_name',     // Authors Company Name
                     'users_authors.lastName as author_last_name',       // Authors Company Name
                     'content_author_companies.field_consentNeeded as company_consent_needed',
@@ -78,23 +78,19 @@ class Query extends Component
                 ->innerJoin('{{%content}} c', '[[viewcount_viewlog_conf.elementId]] = [[c.elementId]]')
                 ->innerJoin('{{%entries}} e', '[[e.id]] = [[c.elementId]]')
                 ->innerJoin('{{%users}} users_members', '[[viewcount_viewlog_conf.userId]] = [[users_members.id]]')
-                ->innerJoin('{{%relations}}', '[[e.id]] = [[relations.sourceId]]')
-                ->innerJoin('{{%categories}}', '[[categories.id]] = [[relations.targetId]]')
-                ->innerJoin('{{%entrytypes}} et', '[[e.typeId]] = [[et.id]]')
-                ->leftJoin('{{%content}} topics', '[[categories.id]] = [[topics.elementId]]')
                 ->leftJoin('{{%content}} content_authors', '[[content_authors.elementId]] = [[e.authorId]]')
                 ->leftJoin('{{%users}} users_authors', '[[e.authorId]] = [[users_authors.id]]')
                 ->leftJoin('{{%content}} content_members', '[[content_members.elementId]] = [[users_members.id]]')
                 ->leftJoin('{{%content}} content_author_companies', '[[content_author_companies.title]] = [[content_authors.field_userCompanyName]]')
                 ->filterWhere(['users_members.firstName' => $memberFirstName])   // Member first name
-                ->andFilterWhere(['users_members.lastName' => $memberLastName])   // Member last name
-                ->andFilterWhere(['in', 'c.title', $conferences])    // Conference title
-                ->andFilterWhere(['content_authors.field_userCompanyName' => $authorCompany])   // Author company
-                ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
-                ->andFilterWhere(['viewKey' => $clickedOn]) // Clicked on
-                ->andFilterWhere(['content_authors.field_consentNeeded' => $consentNeeded])   // Consent needed
-                ->andFilterWhere(['>', 'UNIX_TIMESTAMP(c.dateCreated)', $dateFrom])
-                ->andFilterWhere(['<', 'UNIX_TIMESTAMP(c.dateCreated)', $dateTo])
+                // ->andFilterWhere(['users_members.lastName' => $memberLastName])   // Member last name
+                // ->andFilterWhere(['in', 'c.title', $conferences])    // Conference title
+                // ->andFilterWhere(['content_authors.field_userCompanyName' => $authorCompany])   // Author company
+                // ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
+                // ->andFilterWhere(['viewKey' => $clickedOn]) // Clicked on
+                // ->andFilterWhere(['content_authors.field_consentNeeded' => $consentNeeded])   // Consent needed
+                // ->andFilterWhere(['>', 'UNIX_TIMESTAMP(c.dateCreated)', $dateFrom])
+                // ->andFilterWhere(['<', 'UNIX_TIMESTAMP(c.dateCreated)', $dateTo])
                 ->all();
 
                 return $rows;
