@@ -68,10 +68,12 @@ class Query extends Component
                     'c.field_country as conference_country',
                     'c.field_city as conference_city',
                     'c.field_dateStart as conference_start_date',
-                    'users_authors.firstName as author_first_name',     // Authors Company Name
-                    'users_authors.lastName as author_last_name',       // Authors Company Name
+                    // 'users_authors.firstName as author_first_name',     // Authors Company Name
+                    // 'users_authors.lastName as author_last_name',       // Authors Company Name
+                    'content_conf_company.title as conf_company_name',
                     'content_author_companies.field_consentNeeded as company_consent_needed',
-                    'viewcount_viewlog_conf.dateCreated as created'
+                    'viewcount_viewlog_conf.dateCreated as created',
+                    'viewcount_viewlog_conf.viewKey as clicked_on'
 
                 ])
                 ->from('viewcount_viewlog_conf')
@@ -82,17 +84,19 @@ class Query extends Component
                 ->leftJoin('{{%users}} users_authors', '[[e.authorId]] = [[users_authors.id]]')
                 ->leftJoin('{{%content}} content_members', '[[content_members.elementId]] = [[users_members.id]]')
                 ->leftJoin('{{%content}} content_author_companies', '[[content_author_companies.title]] = [[content_authors.field_userCompanyName]]')
+                ->leftJoin('{{%relations}}', '[[e.id]] = [[relations.sourceId]]')
+                ->leftJoin('{{%content}} content_conf_company', '[[content_conf_company.elementID]] = [[relations.targetId]]')
                 ->filterWhere(['users_members.firstName' => $memberFirstName])   // Member first name
-                // ->andFilterWhere(['users_members.lastName' => $memberLastName])   // Member last name
-                // ->andFilterWhere(['in', 'c.title', $conferences])    // Conference title
-                // ->andFilterWhere(['content_authors.field_userCompanyName' => $authorCompany])   // Author company
-                // ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
-                // ->andFilterWhere(['viewKey' => $clickedOn]) // Clicked on
+                ->andFilterWhere(['users_members.lastName' => $memberLastName])   // Member last name
+                ->andFilterWhere(['in', 'c.title', $conferences])    // Conference title
+                ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
+                ->andFilterWhere(['content_conf_company.title' => $authorCompany])   // Author company
+                ->andFilterWhere(['viewKey' => $clickedOn]) // Clicked on
                 // ->andFilterWhere(['content_authors.field_consentNeeded' => $consentNeeded])   // Consent needed
                 // ->andFilterWhere(['>', 'UNIX_TIMESTAMP(c.dateCreated)', $dateFrom])
                 // ->andFilterWhere(['<', 'UNIX_TIMESTAMP(c.dateCreated)', $dateTo])
                 ->all();
-
+// print_r($rows); exit;
                 return $rows;
     }
 
