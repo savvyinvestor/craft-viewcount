@@ -52,7 +52,7 @@ class Query extends Component
        }
 
        // Additional
-    //   $consentNeeded = $filters['consent_needed'];
+      $consentNeeded = $filters['consent_needed'];
      
        $rows = (new craft\db\Query())
                 ->select([
@@ -71,7 +71,7 @@ class Query extends Component
                     // 'users_authors.firstName as author_first_name',     // Authors Company Name
                     // 'users_authors.lastName as author_last_name',       // Authors Company Name
                     'content_conf_company.title as conf_company_name',
-                    'content_author_companies.field_consentNeeded as company_consent_needed',
+                    'content_conf_company.field_consentNeeded as company_consent_needed',
                     'viewcount_viewlog_conf.dateCreated as created',
                     'viewcount_viewlog_conf.viewKey as clicked_on'
 
@@ -92,9 +92,9 @@ class Query extends Component
                 ->andFilterWhere(['content_members.field_userCompanyName' => $memberCompany])  // Member company
                 ->andFilterWhere(['content_conf_company.title' => $authorCompany])   // Author company
                 ->andFilterWhere(['viewKey' => $clickedOn]) // Clicked on
-                // ->andFilterWhere(['content_authors.field_consentNeeded' => $consentNeeded])   // Consent needed
-                // ->andFilterWhere(['>', 'UNIX_TIMESTAMP(c.dateCreated)', $dateFrom])
-                // ->andFilterWhere(['<', 'UNIX_TIMESTAMP(c.dateCreated)', $dateTo])
+                ->andFilterWhere(['content_conf_company.field_consentNeeded' => $consentNeeded])   // Consent needed
+                ->andFilterWhere(['>', 'UNIX_TIMESTAMP(c.dateCreated)', $dateFrom])
+                ->andFilterWhere(['<', 'UNIX_TIMESTAMP(c.dateCreated)', $dateTo])
                 ->all();
 // print_r($rows); exit;
                 return $rows;
